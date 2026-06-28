@@ -1,20 +1,19 @@
-import React from 'react';
 import { MessageSquare, Flame, Clock } from 'lucide-react';
-import { Comment } from '../../data/posts';
 import { CommentProvider, useComments } from './CommentContext';
 import { CommentInput } from './CommentInput';
 import { CommentList } from './CommentList';
 
 interface CommentSectionProps {
   postId: string;
-  initialComments: Comment[];
 }
 
 function CommentSectionInner() {
   const { sortBy, setSortBy, comments } = useComments();
-  
-  // Simple count for root and level 1 (accurate enough for demo)
-  const totalComments = comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0); 
+
+  const countTree = (list: typeof comments): number =>
+    list.reduce((acc, item) => acc + 1 + countTree(item.replies ?? []), 0);
+
+  const totalComments = countTree(comments);
 
   return (
     <div className="glass-panel mt-2 p-5 sm:p-6">
@@ -32,8 +31,8 @@ function CommentSectionInner() {
           <button
             onClick={() => setSortBy('relevant')}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-colors sm:flex-none ${
-              sortBy === 'relevant' 
-                ? 'bg-white text-slate-950 shadow-soft' 
+              sortBy === 'relevant'
+                ? 'bg-white text-slate-950 shadow-soft'
                 : 'text-zinc-300 hover:text-white'
             }`}
           >
@@ -43,8 +42,8 @@ function CommentSectionInner() {
           <button
             onClick={() => setSortBy('recent')}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-colors sm:flex-none ${
-              sortBy === 'recent' 
-                ? 'bg-white text-slate-950 shadow-soft' 
+              sortBy === 'recent'
+                ? 'bg-white text-slate-950 shadow-soft'
                 : 'text-zinc-300 hover:text-white'
             }`}
           >
@@ -60,9 +59,9 @@ function CommentSectionInner() {
   );
 }
 
-export function CommentSection({ postId, initialComments }: CommentSectionProps) {
+export function CommentSection({ postId }: CommentSectionProps) {
   return (
-    <CommentProvider initialComments={initialComments}>
+    <CommentProvider postId={postId}>
       <CommentSectionInner />
     </CommentProvider>
   );

@@ -1,11 +1,15 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { addDoc, increment, onSnapshot, orderBy, query, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { onAuthStateChanged, type User } from 'firebase/auth';
 import { Comment } from '../../data/posts';
+import { ADMIN_EMAILS, auth } from '../../lib/firebase';
+import { commentDoc, postCommentsCollection, postDoc, toDateValue } from '../../lib/firestore';
 
 interface CommentContextType {
   comments: Comment[];
-  addComment: (content: string, parentId?: string) => void;
-  likeComment: (commentId: string) => void;
-  toggleQuestionStatus: (commentId: string, status: 'isQuestion' | 'isAnswered') => void;
+  addComment: (content: string, parentId?: string) => Promise<void>;
+  likeComment: (commentId: string) => Promise<void>;
+  toggleQuestionStatus: (commentId: string, status: 'isQuestion' | 'isAnswered') => Promise<void>;
   replyingTo: string | null;
   setReplyingTo: (commentId: string | null) => void;
   sortBy: 'relevant' | 'recent';
@@ -14,87 +18,167 @@ interface CommentContextType {
 
 const CommentContext = createContext<CommentContextType | undefined>(undefined);
 
-export function CommentProvider({ 
-  children, 
-  initialComments 
-}: { 
+type FirestoreComment = Omit<Comment, 'createdAt' | 'replies'> & {
+  createdAt: unknown;
+  replies?: Comment[];
+  parentId?: string | null;
+};
+
+const buildTree = (items: Comment[]) => {
+  const nodes = new Map<string, Comment>();
+  const roots: Comment[] = [];
+
+  items.forEach((item) => {
+    nodes.set(item.id, { ...item, replies: [] });
+  });
+
+  items.forEach((item) => {
+    const node = nodes.get(item.id);
+    if (!node) return;
+
+    if (item.parentId && nodes.has(item.parentId)) {
+      nodes.get(item.parentId)?.replies.push(node);
+      return;
+    }
+
+    roots.push(node);
+  });
+
+  return roots;
+};
+
+const compareRelevant = (a: Comment, b: Comment) => {
+  const scoreA = a.likes ?? a.upvotes ?? 0;
+  const scoreB = b.likes ?? b.upvotes ?? 0;
+
+  if (a.isQuestion && !a.isAnswered && (!b.isQuestion || b.isAnswered)) return -1;
+  if (b.isQuestion && !b.isAnswered && (!a.isQuestion || a.isAnswered)) return 1;
+  if (a.isAuthor && !b.isAuthor) return -1;
+  if (b.isAuthor && !a.isAuthor) return 1;
+  return scoreB - scoreA;
+};
+
+const sortTree = (items: Comment[], sortBy: 'relevant' | 'recent'): Comment[] => {
+  const sorted = [...items].sort((a, b) => {
+    if (sortBy === 'recent') {
+      return b.createdAt.getTime() - a.createdAt.getTime();
+    }
+    return compareRelevant(a, b);
+  });
+
+  return sorted.map((item) => ({
+    ...item,
+    replies: sortTree(item.replies ?? [], sortBy),
+  }));
+};
+
+function mapSnapshotComment(id: string, data: FirestoreComment): Comment {
+  return {
+    id,
+    content: data.content,
+    author: data.author,
+    createdAt: toDateValue(data.createdAt),
+    upvotes: data.upvotes ?? 0,
+    downvotes: data.downvotes ?? 0,
+    likes: data.likes ?? data.upvotes ?? 0,
+    isAuthor: data.isAuthor ?? false,
+    replies: data.replies ?? [],
+    parentId: data.parentId,
+    isQuestion: data.isQuestion ?? false,
+    isAnswered: data.isAnswered ?? false,
+  };
+}
+
+export function CommentProvider({
+  children,
+  postId,
+}: {
   children: React.ReactNode;
-  initialComments: Comment[];
+  postId: string;
 }) {
-  const [comments, setComments] = useState<Comment[]>(initialComments);
+  const [flatComments, setFlatComments] = useState<Comment[]>([]);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'relevant' | 'recent'>('relevant');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  // Helper recursivo para atualizar comentários aninhados
-  const updateCommentRecursive = (
-    list: Comment[], 
-    id: string, 
-    updater: (c: Comment) => Comment
-  ): Comment[] => {
-    return list.map(c => {
-      if (c.id === id) {
-        return updater(c);
-      }
-      if (c.replies && c.replies.length > 0) {
-        return { ...c, replies: updateCommentRecursive(c.replies, id, updater) };
-      }
-      return c;
+  useEffect(() => onAuthStateChanged(auth, setCurrentUser), []);
+
+  useEffect(() => {
+    const commentsQuery = query(postCommentsCollection(postId), orderBy('createdAt', 'asc'));
+
+    return onSnapshot(commentsQuery, (snapshot) => {
+      setFlatComments(
+        snapshot.docs.map((docSnapshot) =>
+          mapSnapshotComment(docSnapshot.id, docSnapshot.data() as FirestoreComment),
+        ),
+      );
     });
-  };
+  }, [postId]);
 
-  const addComment = useCallback((content: string, parentId?: string) => {
-    const newComment: Comment = {
-      id: Math.random().toString(36).substring(7),
+  const comments = useMemo(() => {
+    const tree = buildTree(flatComments);
+    return sortTree(tree, sortBy);
+  }, [flatComments, sortBy]);
+
+  const addComment = useCallback(async (content: string, parentId?: string) => {
+    const user = auth.currentUser ?? currentUser;
+    const email = user?.email?.toLowerCase();
+    const isAdmin = !!email && ADMIN_EMAILS.includes(email);
+
+    await addDoc(postCommentsCollection(postId), {
       content,
       author: {
-        name: 'João Developer', // Mock do autor do blog
-        isAnonymous: false
+        name: user?.displayName || user?.email || 'Usuário',
+        avatar: user?.photoURL || undefined,
+        isAnonymous: !user,
       },
-      createdAt: new Date(),
+      createdAt: serverTimestamp(),
       upvotes: 0,
       downvotes: 0,
       likes: 0,
-      isAuthor: true,
+      isAuthor: isAdmin,
       replies: [],
-      parentId
-    };
+      parentId: parentId ?? null,
+      isQuestion: false,
+      isAnswered: false,
+    });
 
-    if (!parentId) {
-      setComments(prev => [newComment, ...prev]);
-    } else {
-      setComments(prev => updateCommentRecursive(prev, parentId, (c) => ({
-        ...c,
-        replies: [...c.replies, newComment]
-      })));
-    }
+    await updateDoc(postDoc(postId), {
+      commentCount: increment(1),
+    });
+
     setReplyingTo(null);
-  }, []);
+  }, [currentUser, postId]);
 
-  const likeComment = useCallback((commentId: string) => {
-    setComments(prev => updateCommentRecursive(prev, commentId, (c) => ({
-      ...c,
-      likes: (c.likes ?? c.upvotes ?? 0) + 1
-    })));
-  }, []);
+  const likeComment = useCallback(async (commentId: string) => {
+    await updateDoc(commentDoc(postId, commentId), {
+      likes: increment(1),
+      upvotes: increment(1),
+    });
+  }, [postId]);
 
-  const toggleQuestionStatus = useCallback((commentId: string, status: 'isQuestion' | 'isAnswered') => {
-    setComments(prev => updateCommentRecursive(prev, commentId, (c) => ({
-      ...c,
-      [status]: !c[status]
-    })));
-  }, []);
+  const toggleQuestionStatus = useCallback(async (commentId: string, status: 'isQuestion' | 'isAnswered') => {
+    const target = flatComments.find((comment) => comment.id === commentId);
+    if (!target) return;
+
+    await updateDoc(commentDoc(postId, commentId), {
+      [status]: !target[status],
+    });
+  }, [flatComments, postId]);
 
   return (
-    <CommentContext.Provider value={{
-      comments,
-      addComment,
-      likeComment,
-      toggleQuestionStatus,
-      replyingTo,
-      setReplyingTo,
-      sortBy,
-      setSortBy
-    }}>
+    <CommentContext.Provider
+      value={{
+        comments,
+        addComment,
+        likeComment,
+        toggleQuestionStatus,
+        replyingTo,
+        setReplyingTo,
+        sortBy,
+        setSortBy,
+      }}
+    >
       {children}
     </CommentContext.Provider>
   );

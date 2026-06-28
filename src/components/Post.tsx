@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowBigUp, ArrowBigDown, MessageCircle, Share2, Bookmark, Clock, Star, ArrowRight } from 'lucide-react';
+import { ArrowBigUp, ArrowBigDown, MessageCircle, Share2, Bookmark, Clock, Star } from 'lucide-react';
 import { Post as PostType } from '../data/posts';
 import { categories } from '../data/categories';
 import { CommentSection } from './comments/CommentSection';
@@ -45,7 +45,6 @@ export function Post({ post, onUpvote, onDownvote, onComment }: PostProps) {
     }
   };
 
-  const unansweredQuestions = post.comments.filter(c => c.isQuestion && !c.isAnswered).length;
   const score = post.upvotes - post.downvotes;
 
   return (
@@ -113,17 +112,6 @@ export function Post({ post, onUpvote, onDownvote, onComment }: PostProps) {
             </div>
           )}
 
-          {unansweredQuestions > 0 && (
-            <div className="mb-5 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-4">
-              <div className="flex items-center gap-2 text-sm">
-                <MessageCircle className="h-4 w-4 text-amber-300" />
-                <span className="font-semibold text-amber-100">
-                  {unansweredQuestions} pergunta{unansweredQuestions > 1 ? 's' : ''} sem resposta
-                </span>
-              </div>
-            </div>
-          )}
-
           <div className="flex flex-col gap-4 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
               <button
@@ -136,9 +124,9 @@ export function Post({ post, onUpvote, onDownvote, onComment }: PostProps) {
                     ? 'border-ink-400/40 bg-ink-500/10 text-ink-200'
                     : 'border-zinc-700 bg-zinc-900 text-zinc-200 hover:border-zinc-600 hover:bg-zinc-800'
                 }`}
-              >
-                <MessageCircle className="h-4 w-4" />
-                <span>{post.comments.length} comentários</span>
+                >
+                  <MessageCircle className="h-4 w-4" />
+                <span>{post.commentCount} comentários</span>
               </button>
               
               <button className="flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900 px-4 py-2 text-zinc-200 transition-colors hover:border-zinc-600 hover:bg-zinc-800">
@@ -152,13 +140,23 @@ export function Post({ post, onUpvote, onDownvote, onComment }: PostProps) {
               </button>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-zinc-400">
-              <div className="flex h-8 w-8 items-center justify-center rounded-2xl bg-gradient-to-br from-ink-400 to-ink-700 font-black text-white">
-                JD
-              </div>
+          <div className="flex items-center gap-3 text-xs text-zinc-400">
+              {post.author.avatar ? (
+                <img
+                  src={post.author.avatar}
+                  alt={post.author.name}
+                  className="h-8 w-8 rounded-2xl object-cover ring-1 ring-white/10"
+                />
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-2xl bg-gradient-to-br from-ink-400 to-ink-700 font-black text-white">
+                  {post.author.name.slice(0, 2).toUpperCase()}
+                </div>
+              )}
               <div>
-                <div className="font-semibold text-white">João Developer</div>
-                <div className="text-[11px] uppercase tracking-[0.25em] text-zinc-500">Autor</div>
+                <div className="font-semibold text-white">{post.author.name}</div>
+                <div className="text-[11px] uppercase tracking-[0.25em] text-zinc-500">
+                  {post.author.isAnonymous ? 'Anônimo' : 'Autor'}
+                </div>
               </div>
             </div>
           </div>
@@ -167,7 +165,7 @@ export function Post({ post, onUpvote, onDownvote, onComment }: PostProps) {
       
       {isCommentsExpanded && (
         <div className="mt-5">
-          <CommentSection postId={post.id} initialComments={post.comments} />
+          <CommentSection postId={post.id} />
         </div>
       )}
     </div>

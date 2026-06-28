@@ -3,9 +3,11 @@ import { Search, User, Menu, Info } from 'lucide-react';
 interface NavbarProps {
   onToggleSidebar?: () => void;
   onAbout?: () => void;
+  profileName?: string;
+  profileAvatar?: string;
 }
 
-export function Navbar({ onToggleSidebar, onAbout }: NavbarProps) {
+export function Navbar({ onToggleSidebar, onAbout, profileName, profileAvatar }: NavbarProps) {
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-zinc-800 bg-black/80 backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -18,15 +20,23 @@ export function Navbar({ onToggleSidebar, onAbout }: NavbarProps) {
               <Menu className="h-5 w-5" />
             </button>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-ink-400 via-ink-500 to-ink-700 text-sm font-black text-white shadow-none">
-                JD
-              </div>
+              {profileAvatar ? (
+                <img
+                  src={profileAvatar}
+                  alt={profileName || 'Perfil'}
+                  className="h-10 w-10 rounded-2xl object-cover ring-1 ring-white/10"
+                />
+              ) : (
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-ink-400 via-ink-500 to-ink-700 text-sm font-black text-white shadow-none">
+                  {(profileName || 'DD').slice(0, 2).toUpperCase()}
+                </div>
+              )}
               <div className="hidden sm:block">
                 <div className="text-[11px] font-bold uppercase tracking-[0.28em] text-zinc-500">
                   Diario do Dev
                 </div>
                 <div className="text-sm font-semibold text-white">
-                  João Developer <span className="text-zinc-500">· Blog Técnico</span>
+                  {profileName || 'Perfil autenticado'} <span className="text-zinc-500">· Blog Técnico</span>
                 </div>
               </div>
             </div>
