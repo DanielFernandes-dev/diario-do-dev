@@ -1,4 +1,4 @@
-import { LogIn, LogOut, Search, Menu, Info } from 'lucide-react';
+import { LogIn, LogOut, Search, Menu, Info, AlertCircle, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
@@ -9,9 +9,10 @@ interface NavbarProps {
 }
 
 export function Navbar({ onToggleSidebar, onAbout, profileName, profileAvatar }: NavbarProps) {
-  const { currentUser, handleGoogleLogin, handleLogout } = useAuth();
+  const { currentUser, handleGoogleLogin, handleLogout, authError, clearAuthError } = useAuth();
 
   return (
+    <>
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-zinc-800 bg-black/80 backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
@@ -88,5 +89,16 @@ export function Navbar({ onToggleSidebar, onAbout, profileName, profileAvatar }:
         </div>
       </div>
     </nav>
+
+    {authError && (
+      <div className="fixed inset-x-0 top-16 z-40 flex items-center gap-3 border-b border-red-500/30 bg-red-950/90 px-4 py-3 backdrop-blur-sm">
+        <AlertCircle className="h-4 w-4 shrink-0 text-red-400" />
+        <p className="flex-1 text-sm text-red-200">{authError}</p>
+        <button onClick={clearAuthError} className="text-red-400 hover:text-red-200">
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    )}
+    </>
   );
 }
