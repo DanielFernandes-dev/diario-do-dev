@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper para verificar se o usuário é admin
+    function isAdmin() {
+      return request.auth != null && 
+             request.auth.token.email.lower() == 'danielfernandesdeoliveira459@gmail.com';
+    }
+
+    // Qualquer pessoa (mesmo não autenticada) pode ler os posts.
+    // Apenas o admin pode criar, atualizar ou deletar posts.
+    match /posts/{postId} {
+      allow read: if true;
+      allow write: if isAdmin();
+
+      // Comentários: qualquer um lê.
+      // Usuários autenticados podem criar e dar likes (update).
+      // Apenas o admin (ou autor) pode excluir/modificar a estrutura principal.
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if request.auth != null;
+        allow update: if request.auth != null;
+        allow delete: if isAdmin();
+      }
+    }
+  }
+}
