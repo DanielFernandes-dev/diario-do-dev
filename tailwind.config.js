@@ -7,31 +7,32 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+        ink: {
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          200: '#ddd6fe',
+          300: '#c4b5fd',
+          400: '#a78bfa',
+          500: '#8b5cf6',
+          600: '#7c3aed',
+          700: '#6d28d9',
+          800: '#5b21b6',
+          900: '#4c1d95',
+          950: '#0a0a0a',
         },
-        reddit: {
-          light: '#dae0e6',
-          dark: '#1a1a1b',
-          card: '#ffffff',
-          border: '#cccccc',
-          text: '#1c1c1c',
-          textSecondary: '#787c7e',
-          upvote: '#ff4500',
-          downvote: '#7193ff',
-        }
+        paper: '#131313',
+        shell: '#0a0a0a',
+        accent: '#a855f7',
+        success: '#10b981',
+        danger: '#ef4444',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+      },
+      boxShadow: {
+        glow: '0 20px 60px rgba(15, 23, 42, 0.14)',
+        soft: '0 14px 45px rgba(15, 23, 42, 0.08)',
       },
     },
   },

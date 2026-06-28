@@ -23,9 +23,9 @@ export function CommentInput({ parentId, isReply = false }: CommentInputProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={`mt-2 ${isReply ? 'ml-0 border-l-2 border-gray-200 pl-4' : ''}`}>
+    <form onSubmit={handleSubmit} className={`mt-2 ${isReply ? 'ml-0 pl-4' : ''}`}>
       <textarea
-        className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y min-h-[80px] bg-white text-gray-800 text-sm font-mono shadow-sm"
+        className="min-h-[90px] w-full resize-y rounded-2xl border border-zinc-700 bg-zinc-900 p-4 text-sm text-zinc-100 outline-none transition-colors placeholder:text-zinc-500 focus:border-ink-400/40 focus:bg-zinc-800"
         rows={isReply ? 2 : 3}
         placeholder={isReply ? "Escreva sua resposta..." : "Adicione um comentário... (suporta Markdown)"}
         value={content}
@@ -36,7 +36,7 @@ export function CommentInput({ parentId, isReply = false }: CommentInputProps) {
           <button
             type="button"
             onClick={handleCancel}
-            className="px-4 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+            className="rounded-full border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-600 hover:bg-zinc-800 hover:text-white"
           >
             Cancelar
           </button>
@@ -44,7 +44,7 @@ export function CommentInput({ parentId, isReply = false }: CommentInputProps) {
         <button
           type="submit"
           disabled={!content.trim()}
-          className="px-4 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors shadow-sm"
+          className="rounded-full bg-ink-500 px-4 py-2 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5 hover:bg-ink-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
         >
           {isReply ? 'Responder' : 'Comentar'}
         </button>

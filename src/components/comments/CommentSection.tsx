@@ -17,23 +17,24 @@ function CommentSectionInner() {
   const totalComments = comments.reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0); 
 
   return (
-    <div className="bg-white border-t border-gray-100 p-4 sm:p-6 rounded-b-lg mt-2">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-        <div className="flex items-center gap-2">
-          <MessageSquare className="w-5 h-5 text-gray-700" />
-          <h3 className="text-lg font-semibold text-gray-900">
-            Discussão <span className="text-gray-500 font-normal text-sm ml-1">({totalComments})</span>
+    <div className="glass-panel mt-2 p-5 sm:p-6">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-ink-500/10 text-ink-200">
+            <MessageSquare className="h-5 w-5" />
+          </div>
+          <h3 className="text-xl font-extrabold text-white">
+            Discussão <span className="ml-2 text-sm font-medium text-slate-400">({totalComments})</span>
           </h3>
         </div>
 
-        {/* Sort Options */}
-        <div className="flex bg-gray-100 rounded-lg p-1 w-full sm:w-auto">
+        <div className="flex w-full rounded-2xl border border-zinc-700 bg-zinc-900 p-1 sm:w-auto">
           <button
             onClick={() => setSortBy('relevant')}
-            className={`flex-1 sm:flex-none px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-colors sm:flex-none ${
               sortBy === 'relevant' 
-                ? 'bg-white text-gray-900 shadow-sm' 
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-slate-950 shadow-soft' 
+                : 'text-zinc-300 hover:text-white'
             }`}
           >
             <Flame className="w-4 h-4" />
@@ -41,10 +42,10 @@ function CommentSectionInner() {
           </button>
           <button
             onClick={() => setSortBy('recent')}
-            className={`flex-1 sm:flex-none px-3 py-1.5 rounded text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-colors sm:flex-none ${
               sortBy === 'recent' 
-                ? 'bg-white text-gray-900 shadow-sm' 
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-slate-950 shadow-soft' 
+                : 'text-zinc-300 hover:text-white'
             }`}
           >
             <Clock className="w-4 h-4" />

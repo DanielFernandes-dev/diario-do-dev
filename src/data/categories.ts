@@ -17,14 +17,14 @@ export const categories: Category[] = [
   {
     id: 'backend',
     name: 'Backend',
-    icon: '�',
+    icon: '🧠',
     color: '#68217a',
     description: 'Servidores, APIs e lógica de negócio'
   },
   {
     id: 'devops',
     name: 'DevOps',
-    icon: '�',
+    icon: '🚀',
     color: '#ff6b35',
     description: 'CI/CD, containers e infraestrutura'
   },
@@ -38,7 +38,7 @@ export const categories: Category[] = [
   {
     id: 'bugs',
     name: 'Bugs e Debugging',
-    icon: '�',
+    icon: '🐞',
     color: '#e74c3c',
     description: 'Resolução de problemas e caça aos bugs'
   },
@@ -52,7 +52,7 @@ export const categories: Category[] = [
   {
     id: 'projetos',
     name: 'Projetos Reais',
-    icon: '�',
+    icon: '📦',
     color: '#27ae60',
     description: 'Casos práticos e implementações'
   },

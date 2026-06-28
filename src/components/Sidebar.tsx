@@ -1,5 +1,5 @@
 import { categories } from '../data/categories';
-import { TrendingUp, MessageSquare, Code, BookOpen, HelpCircle } from 'lucide-react';
+import { MessageSquare, Code, BookOpen, HelpCircle, Sparkles } from 'lucide-react';
 
 interface SidebarProps {
   selectedCategory?: string;
@@ -8,115 +8,124 @@ interface SidebarProps {
 
 export function Sidebar({ selectedCategory, onCategorySelect }: SidebarProps) {
   return (
-    <aside className="w-64 hidden lg:block">
-      {/* Categorias Técnicas */}
-      <div className="sidebar-section">
-        <h3 className="font-semibold text-sm uppercase tracking-wide text-reddit-textSecondary mb-3">
-          Categorias Técnicas
-        </h3>
-        <div className="space-y-1">
-          {categories.map(category => (
-            <button
-              key={category.id}
-              onClick={() => onCategorySelect?.(category.id)}
-              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-md text-sm transition-colors ${
-                selectedCategory === category.id
-                  ? 'bg-blue-50 text-blue-700 font-medium border-l-2 border-blue-500'
-                  : 'text-reddit-text hover:bg-gray-50'
-              }`}
-            >
-              <span className="text-lg">{category.icon}</span>
-              <span className="flex-1 text-left">{category.name}</span>
-            </button>
-          ))}
+    <aside className="hidden w-72 shrink-0 lg:block">
+      <div className="sticky top-24 space-y-4">
+        <div className="sidebar-section">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <div className="section-label">Mapa do conteúdo</div>
+              <h3 className="mt-1 text-lg font-bold text-white">Categorias</h3>
+            </div>
+            <Sparkles className="h-5 w-5 text-ink-300" />
+          </div>
+          <div className="space-y-2">
+            {categories.map(category => (
+              <button
+                key={category.id}
+                onClick={() => onCategorySelect?.(category.id)}
+                className={`flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left text-sm transition-all ${
+                  selectedCategory === category.id
+                    ? 'border-ink-400/40 bg-ink-500/10 text-ink-200'
+                    : 'border-transparent bg-zinc-900 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800'
+                }`}
+              >
+                <span className="text-lg">{category.icon}</span>
+                <span className="flex-1 font-medium">{category.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Posts Mais Comentados */}
-      <div className="sidebar-section">
-        <h3 className="font-semibold text-sm uppercase tracking-wide text-reddit-textSecondary mb-3 flex items-center">
-          <MessageSquare className="h-4 w-4 mr-1" />
-          Mais Discutidos
-        </h3>
-        <div className="space-y-3">
-          {[
-            { title: 'TypeScript: Como tipagem salvou meu projeto', comments: 45 },
-            { title: 'Como resolvi um memory leak em React', comments: 34 },
-            { title: 'Implementando CI/CD do zero com GitHub Actions', comments: 28 }
-          ].map((post, index) => (
-            <div key={index} className="cursor-pointer group">
-              <h4 className="text-sm font-medium text-reddit-text group-hover:text-blue-600 line-clamp-2 mb-1">
-                {post.title}
-              </h4>
-              <div className="flex items-center space-x-2 text-xs text-reddit-textSecondary">
-                <MessageSquare className="h-3 w-3" />
-                <span>{post.comments} comentários</span>
+        <div className="sidebar-section">
+          <div className="mb-4 flex items-center gap-2">
+            <MessageSquare className="h-4 w-4 text-ink-300" />
+            <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-slate-400">
+              Mais Discutidos
+            </h3>
+          </div>
+          <div className="space-y-3">
+            {[
+              { title: 'TypeScript: Como tipagem salvou meu projeto', comments: 45 },
+              { title: 'Como resolvi um memory leak em React', comments: 34 },
+              { title: 'Implementando CI/CD do zero com GitHub Actions', comments: 28 }
+            ].map((post, index) => (
+              <div key={index} className="group cursor-pointer rounded-2xl border border-zinc-700 bg-zinc-900 p-3 transition-colors hover:border-zinc-600 hover:bg-zinc-800">
+                <h4 className="mb-2 line-clamp-2 text-sm font-semibold text-white group-hover:text-ink-200">
+                  {post.title}
+                </h4>
+                <div className="flex items-center gap-2 text-xs text-zinc-400">
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  <span>{post.comments} comentários</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="sidebar-section">
+          <div className="mb-4 flex items-center gap-2">
+            <Code className="h-4 w-4 text-ink-300" />
+            <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-slate-400">
+              Tecnologias
+            </h3>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[
+              'React', 'TypeScript', 'Node.js', 'Docker',
+              'PostgreSQL', 'GraphQL', 'AWS', 'Kubernetes'
+            ].map(tag => (
+              <button
+                key={tag}
+                className="glass-chip text-xs"
+              >
+                #{tag}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="sidebar-section">
+          <div className="mb-4 flex items-center gap-2">
+            <HelpCircle className="h-4 w-4 text-ink-300" />
+            <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-slate-400">
+              Perguntas
+            </h3>
+          </div>
+          <div className="space-y-2">
+            {[
+              'Como decidir quais índices criar?',
+              'Qual foi o maior desafio técnico?',
+              'Como lidar com bibliotecas sem tipagem?'
+            ].map((question, index) => (
+              <div key={index} className="rounded-2xl border border-amber-400/20 bg-amber-400/10 p-3">
+              <p className="line-clamp-2 text-xs leading-relaxed text-amber-100">{question}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="sidebar-section">
+          <div className="mb-4 flex items-center gap-2">
+            <BookOpen className="h-4 w-4 text-ink-300" />
+            <h3 className="text-sm font-bold uppercase tracking-[0.24em] text-slate-400">
+              Sobre o autor
+            </h3>
+          </div>
+          <div className="space-y-3 text-sm text-slate-300">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-ink-400 to-ink-700 font-black text-white">
+                JD
+              </div>
+              <div>
+                <div className="font-semibold text-white">João Developer</div>
+                <div className="text-xs text-zinc-400">Full Stack Developer</div>
               </div>
             </div>
-          ))}
+            <p className="text-xs leading-relaxed text-zinc-400">
+              Desenvolvedor com 8+ anos de experiência compartilhando aprendizados reais,
+              bugs resolvidos e decisões de arquitetura do dia a dia.
+            </p>
         </div>
-      </div>
-
-      {/* Tags Populares */}
-      <div className="sidebar-section">
-        <h3 className="font-semibold text-sm uppercase tracking-wide text-reddit-textSecondary mb-3 flex items-center">
-          <Code className="h-4 w-4 mr-1" />
-          Tecnologias Populares
-        </h3>
-        <div className="flex flex-wrap gap-2">
-          {[
-            'React', 'TypeScript', 'Node.js', 'Docker', 
-            'PostgreSQL', 'GraphQL', 'AWS', 'Kubernetes'
-          ].map(tag => (
-            <button
-              key={tag}
-              className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md hover:bg-blue-50 hover:text-blue-700 transition-colors"
-            >
-              #{tag}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Perguntas em Aberto */}
-      <div className="sidebar-section">
-        <h3 className="font-semibold text-sm uppercase tracking-wide text-reddit-textSecondary mb-3 flex items-center">
-          <HelpCircle className="h-4 w-4 mr-1" />
-          Perguntas em Aberto
-        </h3>
-        <div className="space-y-2">
-          {[
-            'Como decidir quais índices criar?',
-            'Qual foi o maior desafio técnico?',
-            'Como lidar com bibliotecas sem tipagem?'
-          ].map((question, index) => (
-            <div key={index} className="bg-yellow-50 border border-yellow-200 rounded-md p-2">
-              <p className="text-xs text-yellow-800 line-clamp-2">{question}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Sobre o Autor */}
-      <div className="sidebar-section">
-        <h3 className="font-semibold text-sm uppercase tracking-wide text-reddit-textSecondary mb-3 flex items-center">
-          <BookOpen className="h-4 w-4 mr-1" />
-          Sobre o Autor
-        </h3>
-        <div className="text-sm text-reddit-text space-y-2">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xs">JD</span>
-            </div>
-            <div>
-              <div className="font-medium">João Developer</div>
-              <div className="text-xs text-reddit-textSecondary">Full Stack Developer</div>
-            </div>
-          </div>
-          <p className="text-xs leading-relaxed text-reddit-textSecondary">
-            Desenvolvedor com 8+ anos de experiência compartilhando aprendizados reais, 
-            bugs resolvidos e decisões de arquitetura do dia a dia.
-          </p>
         </div>
       </div>
     </aside>

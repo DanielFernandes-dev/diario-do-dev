@@ -28,14 +28,14 @@ export function CommentList() {
 
   if (comments.length === 0) {
     return (
-      <div className="text-center py-10 text-gray-500 text-sm bg-gray-50 rounded-lg border border-dashed border-gray-200 mt-6">
+      <div className="mt-6 rounded-3xl border border-dashed border-zinc-700 bg-zinc-900 py-10 text-center text-sm text-zinc-400">
         Nenhum comentário ainda. Seja o primeiro a compartilhar sua opinião ou fazer uma pergunta!
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 mt-6">
+    <div className="mt-6 space-y-4">
       {sortedComments.map(comment => (
         <div key={comment.id} className="pt-2">
           <CommentItem comment={comment} />
