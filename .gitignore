@@ -104,3 +104,6 @@ temp/
 
 # Local development
 .local
+
+# Firebase local cache
+.firebase/
