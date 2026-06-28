@@ -13,9 +13,10 @@ interface SidebarProps {
     email?: string;
     bio: string;
   };
+  className?: string;
 }
 
-export function Sidebar({ selectedCategory, onCategorySelect, posts, totalComments, profile }: SidebarProps) {
+export function Sidebar({ selectedCategory, onCategorySelect, posts, totalComments, profile, className }: SidebarProps) {
   const topPosts = [...posts]
     .sort((a, b) => (b.commentCount ?? 0) - (a.commentCount ?? 0))
     .slice(0, 3);
@@ -35,7 +36,7 @@ export function Sidebar({ selectedCategory, onCategorySelect, posts, totalCommen
     .map((post) => post.title);
 
   return (
-    <aside className="hidden w-72 shrink-0 lg:block">
+    <aside className={className || "w-full"}>
       <div className="sticky top-24 space-y-4">
         <div className="sidebar-section">
           <div className="mb-4 flex items-center justify-between">

@@ -192,6 +192,7 @@ export function Home() {
 
           <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)_320px]">
             <Sidebar
+              className="hidden w-72 shrink-0 lg:block"
               selectedCategory={selectedCategory || undefined}
               onCategorySelect={setSelectedCategory}
               posts={posts}
@@ -250,9 +251,9 @@ export function Home() {
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900 p-1">
-                    <Filter className="ml-2 h-4 w-4 text-zinc-400" />
-                    <div className="flex">
+                  <div className="flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900 p-1 overflow-x-auto whitespace-nowrap scrollbar-hide">
+                    <Filter className="ml-2 h-4 w-4 shrink-0 text-zinc-400" />
+                    <div className="flex shrink-0">
                       <button
                         onClick={() => setSortBy('recent')}
                         className={`rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${

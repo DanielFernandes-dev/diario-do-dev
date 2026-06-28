@@ -140,7 +140,7 @@ export function AdminComposer({ onCreate }: AdminComposerProps) {
           </label>
         </div>
 
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-2 text-xs text-zinc-500">
             <BookOpen className="h-4 w-4" />
             Apenas o admin pode publicar novos posts.
