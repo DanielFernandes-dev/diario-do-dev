@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { addDoc, onSnapshot, query, serverTimestamp } from 'firebase/firestore';
-import { onAuthStateChanged, signInWithPopup, type User } from 'firebase/auth';
 import { ArrowRight, BookOpen, Clock, Filter, Layers, MessageSquare, Sparkles, TrendingUp } from 'lucide-react';
 import { categories } from '../data/categories';
 import type { Post as PostType } from '../data/posts';
@@ -8,7 +7,7 @@ import { Post } from '../components/Post';
 import { Navbar } from '../components/Navbar';
 import { Sidebar } from '../components/Sidebar';
 import { AdminComposer } from '../components/AdminComposer';
-import { ADMIN_EMAILS, auth, googleProvider } from '../lib/firebase';
+import { useAuth } from '../context/AuthContext';
 import { postsCollection, toDateValue } from '../lib/firestore';
 
 type SortOption = 'recent' | 'popular' | 'discussed';
@@ -38,11 +37,10 @@ export function Home() {
   const [sortBy, setSortBy] = useState<SortOption>('recent');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<PostType[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
 
-  useEffect(() => onAuthStateChanged(auth, setCurrentUser), []);
+  const { currentUser, isAdmin, handleGoogleLogin } = useAuth();
 
   useEffect(() => {
     const unsubscribe = onSnapshot(query(postsCollection), (snapshot) => {
@@ -53,27 +51,17 @@ export function Home() {
     return unsubscribe;
   }, []);
 
-  const isAdmin = useMemo(() => {
-    const email = currentUser?.email?.toLowerCase();
-    return !!email && ADMIN_EMAILS.includes(email);
-  }, [currentUser]);
-
-  const handleGoogleLogin = async () => {
-    await signInWithPopup(auth, googleProvider);
-  };
-
   const handleCreatePost = async (draft: Pick<PostType, 'title' | 'summary' | 'content' | 'categoryId' | 'readingTime' | 'difficulty' | 'tags'>) => {
     if (!isAdmin) return;
 
-    const user = auth.currentUser ?? currentUser;
     await addDoc(postsCollection, {
       title: draft.title,
       summary: draft.summary,
       content: draft.content,
       categoryId: draft.categoryId,
       author: {
-        name: user?.displayName || user?.email || 'Admin',
-        avatar: user?.photoURL || undefined,
+        name: currentUser?.displayName || currentUser?.email || 'Admin',
+        avatar: currentUser?.photoURL || undefined,
         isAnonymous: false,
       },
       createdAt: serverTimestamp(),

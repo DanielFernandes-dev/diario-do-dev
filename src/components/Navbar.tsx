@@ -1,4 +1,5 @@
-import { Search, User, Menu, Info } from 'lucide-react';
+import { LogIn, LogOut, Search, Menu, Info } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
   onToggleSidebar?: () => void;
@@ -8,6 +9,8 @@ interface NavbarProps {
 }
 
 export function Navbar({ onToggleSidebar, onAbout, profileName, profileAvatar }: NavbarProps) {
+  const { currentUser, handleGoogleLogin, handleLogout } = useAuth();
+
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-zinc-800 bg-black/80 backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -61,9 +64,26 @@ export function Navbar({ onToggleSidebar, onAbout, profileName, profileAvatar }:
               <Info className="h-4 w-4" />
               Sobre
             </button>
-            <button className="rounded-full border border-zinc-700 bg-zinc-900 p-2 text-zinc-200 transition-colors hover:bg-zinc-800">
-              <User className="h-5 w-5" />
-            </button>
+
+            {currentUser ? (
+              <button
+                onClick={handleLogout}
+                title="Sair"
+                className="flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm font-semibold text-zinc-200 transition-colors hover:bg-zinc-800"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline">Sair</span>
+              </button>
+            ) : (
+              <button
+                onClick={handleGoogleLogin}
+                title="Entrar com Google"
+                className="flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm font-semibold text-zinc-200 transition-colors hover:bg-zinc-800"
+              >
+                <LogIn className="h-4 w-4" />
+                <span className="hidden sm:inline">Entrar</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -1,9 +1,9 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { addDoc, increment, onSnapshot, orderBy, query, serverTimestamp, updateDoc } from 'firebase/firestore';
-import { onAuthStateChanged, type User } from 'firebase/auth';
 import { Comment } from '../../data/posts';
-import { ADMIN_EMAILS, auth } from '../../lib/firebase';
+import { ADMIN_EMAILS } from '../../lib/firebase';
 import { commentDoc, postCommentsCollection, postDoc, toDateValue } from '../../lib/firestore';
+import { useAuth } from '../../context/AuthContext';
 
 interface CommentContextType {
   comments: Comment[];
@@ -99,9 +99,8 @@ export function CommentProvider({
   const [flatComments, setFlatComments] = useState<Comment[]>([]);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'relevant' | 'recent'>('relevant');
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  useEffect(() => onAuthStateChanged(auth, setCurrentUser), []);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const commentsQuery = query(postCommentsCollection(postId), orderBy('createdAt', 'asc'));
@@ -121,16 +120,15 @@ export function CommentProvider({
   }, [flatComments, sortBy]);
 
   const addComment = useCallback(async (content: string, parentId?: string) => {
-    const user = auth.currentUser ?? currentUser;
-    const email = user?.email?.toLowerCase();
+    const email = currentUser?.email?.toLowerCase();
     const isAdmin = !!email && ADMIN_EMAILS.includes(email);
 
     await addDoc(postCommentsCollection(postId), {
       content,
       author: {
-        name: user?.displayName || user?.email || 'Usuário',
-        avatar: user?.photoURL || undefined,
-        isAnonymous: !user,
+        name: currentUser?.displayName || currentUser?.email || 'Usuário',
+        avatar: currentUser?.photoURL || undefined,
+        isAnonymous: !currentUser,
       },
       createdAt: serverTimestamp(),
       upvotes: 0,
