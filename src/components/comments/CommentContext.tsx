@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { addDoc, increment, onSnapshot, orderBy, query, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { addDoc, deleteDoc, increment, onSnapshot, orderBy, query, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { Comment } from '../../data/posts';
 import { ADMIN_EMAILS } from '../../lib/firebase';
 import { commentDoc, postCommentsCollection, postDoc, toDateValue } from '../../lib/firestore';
@@ -10,6 +10,8 @@ interface CommentContextType {
   addComment: (content: string, parentId?: string) => Promise<void>;
   likeComment: (commentId: string) => Promise<void>;
   toggleQuestionStatus: (commentId: string, status: 'isQuestion' | 'isAnswered') => Promise<void>;
+  deleteComment: (commentId: string) => Promise<void>;
+  editComment: (commentId: string, newContent: string) => Promise<void>;
   replyingTo: string | null;
   setReplyingTo: (commentId: string | null) => void;
   sortBy: 'relevant' | 'recent';
@@ -18,8 +20,9 @@ interface CommentContextType {
 
 const CommentContext = createContext<CommentContextType | undefined>(undefined);
 
-type FirestoreComment = Omit<Comment, 'createdAt' | 'replies'> & {
+type FirestoreComment = Omit<Comment, 'createdAt' | 'replies' | 'editedAt'> & {
   createdAt: unknown;
+  editedAt?: unknown;
   replies?: Comment[];
   parentId?: string | null;
 };
@@ -86,6 +89,7 @@ function mapSnapshotComment(id: string, data: FirestoreComment): Comment {
     parentId: data.parentId,
     isQuestion: data.isQuestion ?? false,
     isAnswered: data.isAnswered ?? false,
+    editedAt: data.editedAt ? toDateValue(data.editedAt) : undefined,
   };
 }
 
@@ -164,6 +168,20 @@ export function CommentProvider({
     });
   }, [flatComments, postId]);
 
+  const deleteComment = useCallback(async (commentId: string) => {
+    await deleteDoc(commentDoc(postId, commentId));
+    await updateDoc(postDoc(postId), {
+      commentCount: increment(-1),
+    });
+  }, [postId]);
+
+  const editComment = useCallback(async (commentId: string, newContent: string) => {
+    await updateDoc(commentDoc(postId, commentId), {
+      content: newContent,
+      editedAt: serverTimestamp(),
+    });
+  }, [postId]);
+
   return (
     <CommentContext.Provider
       value={{
@@ -171,6 +189,8 @@ export function CommentProvider({
         addComment,
         likeComment,
         toggleQuestionStatus,
+        deleteComment,
+        editComment,
         replyingTo,
         setReplyingTo,
         sortBy,

@@ -164,7 +164,7 @@ export function Post({ post, onUpvote, onDownvote, onComment }: PostProps) {
       </div>
       
       {isCommentsExpanded && (
-        <div className="mt-5">
+        <div className="mt-5 mx-auto max-w-3xl">
           <CommentSection postId={post.id} />
         </div>
       )}

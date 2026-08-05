@@ -35,4 +35,5 @@ export interface Comment {
   parentId?: string;
   isQuestion?: boolean;
   isAnswered?: boolean;
+  editedAt?: Date;
 }
