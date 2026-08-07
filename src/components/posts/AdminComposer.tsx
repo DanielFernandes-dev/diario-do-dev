@@ -51,23 +51,23 @@ export function AdminComposer({ onCreate }: AdminComposerProps) {
 
       <form onSubmit={handleSubmit} className="grid gap-4">
         <div className="grid gap-4 lg:grid-cols-2">
-          <label className="grid gap-2">
+          <label className="grid gap-2 min-w-0">
             <span className="text-sm font-semibold text-zinc-200">Título</span>
             <input
               required
               value={draft.title}
               onChange={(e) => setDraft((prev) => ({ ...prev, title: e.target.value }))}
-              className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-ink-400/40 focus:bg-zinc-800"
+              className="w-full rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-ink-400/40 focus:bg-zinc-800"
               placeholder="Título do post"
             />
           </label>
 
-          <label className="grid gap-2">
+          <label className="grid gap-2 min-w-0">
             <span className="text-sm font-semibold text-zinc-200">Categoria</span>
             <select
               value={draft.categoryId}
               onChange={(e) => setDraft((prev) => ({ ...prev, categoryId: e.target.value }))}
-              className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-ink-400/40 focus:bg-zinc-800"
+              className="w-full rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-ink-400/40 focus:bg-zinc-800"
             >
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
@@ -78,31 +78,31 @@ export function AdminComposer({ onCreate }: AdminComposerProps) {
           </label>
         </div>
 
-        <label className="grid gap-2">
+        <label className="grid gap-2 min-w-0">
           <span className="text-sm font-semibold text-zinc-200">Resumo</span>
           <input
             required
             value={draft.summary}
             onChange={(e) => setDraft((prev) => ({ ...prev, summary: e.target.value }))}
-            className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-ink-400/40 focus:bg-zinc-800"
+            className="w-full rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-ink-400/40 focus:bg-zinc-800"
             placeholder="Resumo curto para o card do post"
           />
         </label>
 
-        <label className="grid gap-2">
+        <label className="grid gap-2 min-w-0">
           <span className="text-sm font-semibold text-zinc-200">Conteúdo</span>
           <textarea
             required
             rows={6}
             value={draft.content}
             onChange={(e) => setDraft((prev) => ({ ...prev, content: e.target.value }))}
-            className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-ink-400/40 focus:bg-zinc-800"
+            className="w-full rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-ink-400/40 focus:bg-zinc-800"
             placeholder="Corpo do post"
           />
         </label>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <label className="grid gap-2">
+          <label className="grid gap-2 min-w-0">
             <span className="text-sm font-semibold text-zinc-200">Tempo de leitura</span>
             <input
               type="number"
@@ -110,16 +110,16 @@ export function AdminComposer({ onCreate }: AdminComposerProps) {
               required
               value={draft.readingTime}
               onChange={(e) => setDraft((prev) => ({ ...prev, readingTime: Number(e.target.value) }))}
-              className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-ink-400/40 focus:bg-zinc-800"
+              className="w-full rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-ink-400/40 focus:bg-zinc-800"
             />
           </label>
 
-          <label className="grid gap-2">
+          <label className="grid gap-2 min-w-0">
             <span className="text-sm font-semibold text-zinc-200">Dificuldade</span>
             <select
               value={draft.difficulty}
               onChange={(e) => setDraft((prev) => ({ ...prev, difficulty: e.target.value as PostDraft['difficulty'] }))}
-              className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-ink-400/40 focus:bg-zinc-800"
+              className="w-full rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-ink-400/40 focus:bg-zinc-800"
             >
               <option value="iniciante">Iniciante</option>
               <option value="intermediario">Intermediário</option>
@@ -127,12 +127,12 @@ export function AdminComposer({ onCreate }: AdminComposerProps) {
             </select>
           </label>
 
-          <label className="grid gap-2">
+          <label className="grid gap-2 min-w-0">
             <span className="text-sm font-semibold text-zinc-200">Tags</span>
             <input
               value={tagsText}
               onChange={(e) => setTagsText(e.target.value)}
-              className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-ink-400/40 focus:bg-zinc-800"
+              className="w-full rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-zinc-500 focus:border-ink-400/40 focus:bg-zinc-800"
               placeholder="React, Firebase, Firestore"
             />
           </label>
