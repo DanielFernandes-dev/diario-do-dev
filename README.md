@@ -1,6 +1,6 @@
 # Diario do Dev
 
-Blog técnico do **Diário do Dev** com interface inspirada em feed social, focado em publicar experiências reais de desenvolvedores, bugs resolvidos e decisões de arquitetura.
+Blog técnico do **Diário do Dev** com interface inspirada em feed social, focado em publicar experiências reais do desenvolvedor, bugs resolvidos e decisões de arquitetura.
 
 ## O que este repositório faz
 
@@ -11,8 +11,6 @@ Toda a parte de dados e "backend" está hospedada no **Firebase**:
 - **Firestore** — persistência de posts, comentários e likes
 - **Firebase Auth** — login com conta Google
 - **Firebase Hosting** — publicação do frontend
-
-Não existe mais backend próprio: o Firebase é a camada de dados da aplicação.
 
 ## Regras de publicação
 
