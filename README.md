@@ -60,6 +60,12 @@ Toda a parte de dados e "backend" está hospedada no **Firebase**:
 - comentários aninhados com resposta, like, edição, exclusão, marcação de pergunta/respondida e blocos de código
 - painel admin com criação, edição inline e exclusão de posts
 - layout responsivo (desktop + mobile)
+- paginação infinita com carregamento de mais posts e atualização manual
+- tratamento de erros com tela de feedback e botão de tentar novamente
+- componente FitText para ajuste automático de tamanho de texto em containers
+- remoção da ordenação por "populares" (mantida apenas recentes e discutidos)
+- atualização do sidebar com truncagem de nome e email adaptável
+- simplificação do painel de estatísticas (removido contagem de categorias e tags em alta)
 
 ## Dados
 
@@ -125,6 +131,12 @@ Implementado:
 - páginas individuais de post
 - layout responsivo
 - regras de segurança do Firestore
+- paginação infinita com carregamento de mais posts e atualização manual
+- tratamento de erros com tela de feedback e botão de tentar novamente
+- componente FitText para ajuste automático de tamanho de texto em containers
+- atualização do sidebar com truncagem de nome e email adaptável
+- simplificação do painel de estatísticas (removido contagem de categorias e tags em alta)
+- remoção da ordenação por "populares" (mantida apenas recentes e discutidos)
 
 Ainda não implementado:
 

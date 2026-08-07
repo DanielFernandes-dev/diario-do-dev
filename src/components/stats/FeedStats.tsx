@@ -1,5 +1,4 @@
 import { ArrowRight, LogOut } from 'lucide-react';
-import { categories } from '@/data/categories';
 import { useAuth } from '@/context/AuthContext';
 
 export interface FeedStatsProps {
@@ -11,10 +10,9 @@ export interface FeedStatsProps {
   };
   postCount: number;
   commentCount: number;
-  topTags: [string, number][];
 }
 
-export function FeedStats({ profile, postCount, commentCount, topTags }: FeedStatsProps) {
+export function FeedStats({ profile, postCount, commentCount }: FeedStatsProps) {
   const { currentUser, handleLogout } = useAuth();
 
   return (
@@ -58,21 +56,6 @@ export function FeedStats({ profile, postCount, commentCount, topTags }: FeedSta
             <span className="text-zinc-400">Total de comentários</span>
             <span className="font-semibold text-white">{commentCount}</span>
           </div>
-          <div className="flex items-center justify-between rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3">
-            <span className="text-zinc-400">Categorias</span>
-            <span className="font-semibold text-white">{categories.length}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="sidebar-section">
-        <div className="section-label">Tags em alta</div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {topTags.slice(0, 6).map(([tag]) => (
-            <span key={tag} className="glass-chip text-xs">
-              #{tag}
-            </span>
-          ))}
         </div>
       </div>
 

@@ -11,7 +11,18 @@ export function Home() {
   const [sortBy, setSortBy] = useState<SortOption>('recent');
 
   const { currentUser, isAdmin, handleGoogleLogin } = useAuth();
-  const { posts, createPost, updatePost, deletePost, likePost } = usePosts();
+  const { 
+    posts, 
+    loadingPosts, 
+    error,
+    hasMore,
+    loadMorePosts,
+    refreshPosts,
+    createPost,
+    updatePost,
+    deletePost,
+    likePost
+  } = usePosts(sortBy, selectedCategory, 20, true); // 20 posts per page, pagination enabled
 
   const filteredPosts = posts.filter((post) => !selectedCategory || post.categoryId === selectedCategory);
 
@@ -20,8 +31,6 @@ export function Home() {
       switch (sortBy) {
         case 'recent':
           return b.createdAt.getTime() - a.createdAt.getTime();
-        case 'popular':
-          return b.likes - a.likes;
         case 'discussed':
           return b.commentCount - a.commentCount;
         default:
@@ -89,6 +98,11 @@ export function Home() {
               onLikePost={likePost}
               onEditPost={updatePost}
               onDeletePost={deletePost}
+              loadingPosts={loadingPosts}
+              error={error}
+              hasMore={hasMore}
+              onLoadMore={loadMorePosts}
+              onRefresh={refreshPosts}
             />
 
             <aside className="hidden xl:block">
@@ -96,7 +110,6 @@ export function Home() {
                 profile={profile}
                 postCount={posts.length}
                 commentCount={totalComments}
-                topTags={topTags}
               />
             </aside>
           </div>

@@ -25,4 +25,4 @@ export type PostDraft = Pick<
   'title' | 'summary' | 'content' | 'categoryId' | 'readingTime' | 'difficulty' | 'tags'
 >;
 
-export type SortOption = 'recent' | 'popular' | 'discussed';
+export type SortOption = 'recent' | 'discussed';

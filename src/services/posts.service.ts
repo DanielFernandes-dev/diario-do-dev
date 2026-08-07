@@ -8,15 +8,22 @@ import {
   getDocs,
   increment,
   onSnapshot,
+  orderBy,
   query,
   serverTimestamp,
+  startAfter,
+  startAt,
   updateDoc,
   writeBatch,
   type Unsubscribe,
+  QueryConstraint,
+  where,
+  limit,
+  type DocumentSnapshot,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { toDateValue } from '@/utils/formatters';
-import type { Post, PostDraft } from '@/types/post';
+import type { Post, PostDraft, SortOption } from '@/types/post';
 
 const postsCollection = collection(db, 'posts');
 
@@ -44,10 +51,101 @@ export const mapPost = (id: string, data: Record<string, unknown>): Post => ({
   tags: Array.isArray(data.tags) ? (data.tags as string[]) : [],
 });
 
-export const subscribePosts = (onChange: (posts: Post[]) => void): Unsubscribe =>
-  onSnapshot(query(postsCollection), (snapshot) => {
+/**
+ * Subscribe to posts with pagination and sorting
+ * @param onChange Callback when posts change
+ * @param pageSize Number of posts per page (default: 20)
+ * @param sortBy Sort option: 'recent' or 'discussed'
+ * @param categoryId Optional category filter
+ * @param cursor Optional document cursor to start from
+ * @returns Unsubscribe function
+ */
+export const subscribePaginatedPosts = (
+  onChange: (posts: Post[]) => void,
+  pageSize = 20,
+  sortBy: SortOption = 'recent',
+  categoryId: string | null = null,
+  cursor: DocumentSnapshot<unknown> | null = null,
+): Unsubscribe => {
+  let constraints: QueryConstraint[] = [];
+
+  // Add ordering based on sortBy
+  switch (sortBy) {
+    case 'recent':
+      constraints.push(orderBy('createdAt', 'desc'));
+      break;
+    case 'discussed':
+      constraints.push(orderBy('commentCount', 'desc'));
+      break;
+    default:
+      constraints.push(orderBy('createdAt', 'desc'));
+  }
+
+  // Add category filter if specified
+  if (categoryId) {
+    constraints.push(where('categoryId', '==', categoryId));
+  }
+
+  // Add pagination
+  if (cursor) {
+    constraints.push(startAfter(cursor));
+  }
+  constraints.push(limit(pageSize));
+
+  const postsQuery = query(postsCollection, ...constraints);
+
+  return onSnapshot(postsQuery, (snapshot) => {
     onChange(snapshot.docs.map((docSnapshot) => mapPost(docSnapshot.id, docSnapshot.data())));
   });
+};
+
+/**
+ * Get a single page of posts (non-realtime)
+ * @param pageSize Number of posts per page
+ * @param sortBy Sort option
+ * @param categoryId Optional category filter
+ * @param cursor Optional document cursor to start from
+ * @returns Promise with posts and cursor for next page
+ */
+export const getPostsPage = async (
+  pageSize = 20,
+  sortBy: SortOption = 'recent',
+  categoryId: string | null = null,
+  cursor: DocumentSnapshot<unknown> | null = null,
+): Promise<{ posts: Post[]; nextCursor: DocumentSnapshot<unknown> | null }> => {
+  let constraints: QueryConstraint[] = [];
+
+  // Add ordering based on sortBy
+  switch (sortBy) {
+    case 'recent':
+      constraints.push(orderBy('createdAt', 'desc'));
+      break;
+    case 'discussed':
+      constraints.push(orderBy('commentCount', 'desc'));
+      break;
+    default:
+      constraints.push(orderBy('createdAt', 'desc'));
+  }
+
+  // Add category filter if specified
+  if (categoryId) {
+    constraints.push(where('categoryId', '==', categoryId));
+  }
+
+  // Add pagination
+  if (cursor) {
+    constraints.push(startAfter(cursor));
+  }
+  constraints.push(limit(pageSize));
+
+  const postsQuery = query(postsCollection, ...constraints);
+  const snapshot = await getDocs(postsQuery);
+
+  const posts = snapshot.docs.map((docSnapshot) => mapPost(docSnapshot.id, docSnapshot.data()));
+  const nextCursor = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null;
+
+  return { posts, nextCursor };
+};
 
 export const createPost = (draft: PostDraft, author: Post['author']) =>
   addDoc(postsCollection, {

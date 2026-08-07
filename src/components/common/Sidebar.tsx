@@ -1,4 +1,5 @@
 import { MessageSquare, BookOpen } from 'lucide-react';
+import { FitText } from '@/components/common/FitText';
 import type { Post } from '@/types/post';
 
 interface SidebarProps {
@@ -56,22 +57,22 @@ export function Sidebar({ posts, totalComments, profile, className }: SidebarPro
               Sobre o autor
             </h3>
           </div>
-          <div className="space-y-3 text-sm text-slate-300">
-            <div className="flex items-center gap-3">
+          <div className="space-y-3 break-words text-sm text-slate-300">
+            <div className="flex min-w-0 items-center gap-3">
               {profile.avatar ? (
                 <img
                   src={profile.avatar}
                   alt={profile.name}
-                  className="h-10 w-10 rounded-2xl object-cover ring-1 ring-white/10"
+                  className="h-10 w-10 shrink-0 rounded-2xl object-cover ring-1 ring-white/10"
                 />
               ) : (
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-ink-400 to-ink-700 font-black text-white">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-ink-400 to-ink-700 font-black text-white">
                   {profile.name.slice(0, 2).toUpperCase()}
                 </div>
               )}
-              <div>
-                <div className="font-semibold text-white">{profile.name}</div>
-                <div className="text-xs text-zinc-400">{profile.email || 'Autenticado com Firebase'}</div>
+              <div className="min-w-0">
+                <div className="truncate font-semibold text-white">{profile.name}</div>
+                <FitText text={profile.email || 'Autenticado com Firebase'} className="text-zinc-400" />
               </div>
             </div>
             <p className="text-xs leading-relaxed text-zinc-400">{profile.bio}</p>

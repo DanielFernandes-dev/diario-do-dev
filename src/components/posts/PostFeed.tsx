@@ -1,4 +1,5 @@
-import { BookOpen, Clock, Filter, LogIn, MessageSquare, RefreshCw, TrendingUp } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { BookOpen, Clock, Filter, LogIn, MessageSquare, RefreshCw, TrendingUp, Shuffle } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import { categories } from '@/data/categories';
 import type { Post, PostDraft, SortOption } from '@/types/post';
@@ -18,11 +19,15 @@ interface PostFeedProps {
   onLikePost: (postId: string) => Promise<void>;
   onEditPost: (postId: string, draft: PostDraft) => Promise<void>;
   onDeletePost: (postId: string) => Promise<void>;
+  loadingPosts: boolean;
+  error: string | null;
+  hasMore: boolean;
+  onLoadMore: () => Promise<void>;
+  onRefresh: () => Promise<void>;
 }
 
 const SORT_OPTIONS: { id: SortOption; label: string; icon: typeof Clock }[] = [
   { id: 'recent', label: 'Recentes', icon: Clock },
-  { id: 'popular', label: 'Populares', icon: TrendingUp },
   { id: 'discussed', label: 'Discutidos', icon: MessageSquare },
 ];
 
@@ -39,6 +44,11 @@ export function PostFeed({
   onLikePost,
   onEditPost,
   onDeletePost,
+  loadingPosts,
+  error,
+  hasMore,
+  onLoadMore,
+  onRefresh,
 }: PostFeedProps) {
   return (
     <div className="space-y-6">
@@ -98,11 +108,24 @@ export function PostFeed({
         </section>
       )}
 
+      {error && (
+        <div className="glass-panel p-5 sm:p-6 text-center">
+          <p className="text-sm text-red-400">{error}</p>
+          <button
+            onClick={onRefresh}
+            className="mt-2 inline-flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm font-semibold text-zinc-200 transition-colors hover:bg-zinc-800"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Tentar novamente
+          </button>
+        </div>
+      )}
+
       <section className="glass-panel p-5 sm:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="section-label">Feed principal</div>
-            <div className="mt-2 flex items-center gap-3">
+            <div className="flex items-center gap-3">
               <h2 className="text-3xl font-extrabold text-white">
                 {selectedCategory ? 'Posts em' : 'Todos os posts'}
               </h2>
@@ -115,11 +138,6 @@ export function PostFeed({
                 </button>
               )}
             </div>
-            <p className="mt-2 text-sm text-slate-400">
-              {selectedCategory
-                ? `Conteúdos sobre ${categories.find((cat) => cat.id === selectedCategory)?.name}`
-                : 'Relatos técnicos, aprendizados e experiências reais do dia a dia de desenvolvimento'}
-            </p>
           </div>
 
           <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap rounded-2xl border border-zinc-700 bg-zinc-900 p-1 scrollbar-hide">
@@ -167,6 +185,49 @@ export function PostFeed({
           </div>
         )}
       </div>
+
+      {/* Pagination controls */}
+      {loadingPosts || hasMore ? (
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {loadingPosts && (
+              <button
+                disabled
+                className="flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900 py-3 text-sm font-semibold text-zinc-400"
+              >
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                Carregando...
+              </button>
+            )}
+            
+            {!loadingPosts && hasMore && (
+              <button
+                onClick={onLoadMore}
+                className="flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900 py-3 text-sm font-semibold text-zinc-200 transition-colors hover:border-ink-400 hover:bg-zinc-800 hover:text-white"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Carregar mais posts
+              </button>
+            )}
+            
+            {!loadingPosts && hasMore && (
+              <button
+                onClick={onRefresh}
+                className="flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900 py-3 text-sm font-semibold text-zinc-200 transition-colors hover:border-ink-400 hover:bg-zinc-800 hover:text-white"
+              >
+                <Shuffle className="h-4 w-4" />
+                Página aleatória anterior
+              </button>
+            )}
+          </div>
+          
+          {!loadingPosts && (
+            <div className="text-xs text-zinc-500">
+              Mostrando {posts.length} posts{hasMore ? ' (mais disponíveis)' : ''}
+            </div>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }
