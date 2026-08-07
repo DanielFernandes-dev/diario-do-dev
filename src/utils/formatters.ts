@@ -1,13 +1,4 @@
-import { collection, doc, type DocumentData, type QueryDocumentSnapshot, Timestamp } from 'firebase/firestore';
-import { db } from './firebase';
-
-export const postsCollection = collection(db, 'posts');
-
-export const postDoc = (postId: string) => doc(db, 'posts', postId);
-
-export const postCommentsCollection = (postId: string) => collection(db, 'posts', postId, 'comments');
-
-export const commentDoc = (postId: string, commentId: string) => doc(db, 'posts', postId, 'comments', commentId);
+import { Timestamp } from 'firebase/firestore';
 
 export const toDateValue = (value: unknown): Date => {
   if (value instanceof Date) return value;
@@ -24,7 +15,21 @@ export const toDateValue = (value: unknown): Date => {
   return new Date();
 };
 
-export const fromDoc = <T extends DocumentData>(snapshot: QueryDocumentSnapshot<T>) => ({
-  id: snapshot.id,
-  ...snapshot.data(),
-});
+export const formatRelativeDate = (date: Date): string => {
+  const now = new Date();
+  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+
+  if (diffInHours < 1) return 'agora';
+  if (diffInHours < 24) return `há ${diffInHours}h`;
+  if (diffInHours < 48) return 'ontem';
+
+  return date.toLocaleDateString('pt-BR');
+};
+
+export const formatCommentDate = (date: Date): string =>
+  new Date(date).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });

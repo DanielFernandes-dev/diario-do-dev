@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { BookOpen, PenSquare, Plus } from 'lucide-react';
-import { categories } from '../data/categories';
-import type { Post } from '../data/posts';
-
-type DraftPost = Pick<Post, 'title' | 'summary' | 'content' | 'categoryId' | 'readingTime' | 'difficulty' | 'tags'>;
+import { categories } from '@/data/categories';
+import type { PostDraft } from '@/types/post';
 
 interface AdminComposerProps {
-  onCreate: (post: DraftPost) => void;
+  onCreate: (post: PostDraft) => void;
 }
 
-const initialDraft: DraftPost = {
+const initialDraft: PostDraft = {
   title: '',
   summary: '',
   content: '',
@@ -20,7 +18,7 @@ const initialDraft: DraftPost = {
 };
 
 export function AdminComposer({ onCreate }: AdminComposerProps) {
-  const [draft, setDraft] = useState<DraftPost>(initialDraft);
+  const [draft, setDraft] = useState<PostDraft>(initialDraft);
   const [tagsText, setTagsText] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -120,7 +118,7 @@ export function AdminComposer({ onCreate }: AdminComposerProps) {
             <span className="text-sm font-semibold text-zinc-200">Dificuldade</span>
             <select
               value={draft.difficulty}
-              onChange={(e) => setDraft((prev) => ({ ...prev, difficulty: e.target.value as DraftPost['difficulty'] }))}
+              onChange={(e) => setDraft((prev) => ({ ...prev, difficulty: e.target.value as PostDraft['difficulty'] }))}
               className="rounded-2xl border border-zinc-700 bg-zinc-900 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-ink-400/40 focus:bg-zinc-800"
             >
               <option value="iniciante">Iniciante</option>

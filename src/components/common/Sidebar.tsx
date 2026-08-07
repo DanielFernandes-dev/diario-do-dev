@@ -1,6 +1,6 @@
-import { categories } from '../data/categories';
+import { categories } from '@/data/categories';
 import { MessageSquare, Code, BookOpen, HelpCircle, Sparkles } from 'lucide-react';
-import type { Post } from '../data/posts';
+import type { Post } from '@/types/post';
 
 interface SidebarProps {
   selectedCategory?: string;

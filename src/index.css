@@ -65,12 +65,8 @@
     @apply flex flex-col items-center justify-center rounded-2xl border border-zinc-700 bg-zinc-900 p-2 text-zinc-300 transition-all hover:border-ink-400/40 hover:bg-ink-500/10 hover:text-ink-200;
   }
   
-  .vote-button.active.upvote {
+  .vote-button.active.like {
     @apply border-ink-400/40 bg-ink-500/15 text-ink-200;
-  }
-  
-  .vote-button.active.downvote {
-    @apply border-blue-400/40 bg-blue-400/15 text-blue-300;
   }
   
   .category-badge {

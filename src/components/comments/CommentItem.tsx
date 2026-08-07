@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { ArrowBigUp, MessageCircle, HelpCircle, CheckCircle, MoreHorizontal, Pencil, Trash2, X, Check } from 'lucide-react';
-import { Comment } from '../../data/posts';
+import { Heart, MessageCircle, HelpCircle, CheckCircle, MoreHorizontal, Pencil, Trash2, X, Check } from 'lucide-react';
+import type { Comment } from '@/types/comment';
 import { useComments } from './CommentContext';
 import { CommentInput } from './CommentInput';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 
 interface CommentItemProps {
   comment: Comment;
@@ -11,6 +11,13 @@ interface CommentItemProps {
 }
 
 const MAX_DEPTH = 2; // Allow root, level 1, level 2. Total 3 levels as requested.
+
+// Recuo máximo por nível: 20px a 28px no desktop, menor em telas pequenas.
+const TREE_INDENT = 'clamp(12px, 2.4vw, 26px)';
+// Profundidades muito altas param de aumentar significativamente a indentação.
+const TREE_INDENT_DEEP = 'clamp(8px, 1.6vw, 12px)';
+const MAX_TREE_DEPTH = 3;
+const CONNECTOR_TOP = 20; // Alinha o conector com o centro do avatar.
 
 export function CommentItem({ comment, depth = 0 }: CommentItemProps) {
   const { 
@@ -33,12 +40,18 @@ export function CommentItem({ comment, depth = 0 }: CommentItemProps) {
   const isReplying = replyingTo === comment.id;
   const isAuthor = comment.isAuthor;
 
+  const isLiked = (comment.likedBy ?? []).some(
+    (email) => email.toLowerCase() === currentUser?.email?.toLowerCase(),
+  );
+
   // Determina se o usuário atual pode editar/deletar
   const canManage = isAdmin || (
     currentUser &&
-    !comment.author.isAnonymous &&
-    (currentUser.displayName === comment.author.name || currentUser.email === comment.author.name)
+    !!comment.authorId &&
+    currentUser.email?.toLowerCase() === comment.authorId.toLowerCase()
   );
+
+  const treeIndent = depth >= MAX_TREE_DEPTH ? TREE_INDENT_DEEP : TREE_INDENT;
 
   const formatDate = (date: Date) => {
     const d = new Date(date);
@@ -89,7 +102,7 @@ export function CommentItem({ comment, depth = 0 }: CommentItemProps) {
   };
 
   return (
-    <div className={`mt-5 flex flex-col ${depth > 0 ? 'ml-2 border-l border-zinc-700 pl-3 sm:ml-6 sm:pl-5' : ''}`}>
+    <div className="w-full">
       <div className="flex gap-3">
         <div className="mt-1 flex-shrink-0">
           {comment.author.avatar ? (
@@ -202,9 +215,10 @@ export function CommentItem({ comment, depth = 0 }: CommentItemProps) {
           <div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-medium text-zinc-400">
             <button 
               onClick={() => likeComment(comment.id)} 
-              className="flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-900 px-3 py-1.5 transition-colors hover:border-ink-400/30 hover:bg-ink-500/10 hover:text-ink-200"
+              title={isLiked ? 'Descurtir' : 'Curtir'}
+              className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 transition-colors ${isLiked ? 'border-ink-400/30 bg-ink-500/10 text-ink-200' : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-ink-400/30 hover:bg-ink-500/10 hover:text-ink-200'}`}
             >
-              <ArrowBigUp className="w-4 h-4" />
+              <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
               <span>{comment.likes ?? comment.upvotes ?? 0}</span>
             </button>
             <button 
@@ -230,29 +244,44 @@ export function CommentItem({ comment, depth = 0 }: CommentItemProps) {
               <CommentInput parentId={comment.id} isReply />
             </div>
           )}
+        </div>
+      </div>
 
-          {comment.replies && comment.replies.length > 0 && (
-            <div className="mt-2">
-              {depth >= MAX_DEPTH && !showMoreReplies ? (
-                <button 
-                  onClick={() => setShowMoreReplies(true)}
-                  className="mt-3 flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-zinc-600 hover:bg-zinc-800"
-                >
-                  <MoreHorizontal className="w-4 h-4" />
-                  Ver mais {comment.replies.length} respostas
-                </button>
-              ) : (
-                <div className="relative">
-                  {showMoreReplies && <div className="absolute -left-[1.35rem] top-0 bottom-0 w-px bg-zinc-700" />}
-                  {comment.replies.map(reply => (
-                    <CommentItem key={reply.id} comment={reply} depth={depth + 1} />
-                  ))}
-                </div>
-              )}
+      {comment.replies && comment.replies.length > 0 && (
+        <div className="mt-3">
+          {depth >= MAX_DEPTH && !showMoreReplies ? (
+            <div className="flex" style={{ paddingLeft: treeIndent }}>
+              <button 
+                onClick={() => setShowMoreReplies(true)}
+                className="flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-200 transition-colors hover:border-zinc-600 hover:bg-zinc-800"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+                Ver mais {comment.replies.length} respostas
+              </button>
+            </div>
+          ) : (
+            <div className="relative">
+              {/* Tronco vertical da árvore: percorre todas as respostas deste nível */}
+              <div
+                className="absolute top-2 bottom-1 w-px bg-zinc-700/70"
+                style={{ left: '0px' }}
+              />
+              <div className="flex flex-col gap-4" style={{ paddingLeft: treeIndent }}>
+                {comment.replies.map(reply => (
+                  <div className="relative" key={reply.id}>
+                    {/* Conector horizontal da linha da árvore até o card da resposta */}
+                    <div
+                      className="absolute h-px bg-zinc-700/70"
+                      style={{ top: `${CONNECTOR_TOP}px`, left: `calc(0px - ${treeIndent})`, width: treeIndent }}
+                    />
+                    <CommentItem comment={reply} depth={depth + 1} />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { LogIn } from 'lucide-react';
 import { useComments } from './CommentContext';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 
 interface CommentInputProps {
   parentId?: string;

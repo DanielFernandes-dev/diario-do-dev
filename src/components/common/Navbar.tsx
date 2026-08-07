@@ -1,5 +1,5 @@
 import { LogIn, LogOut, Search, Menu, Info, AlertCircle, X } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 
 interface NavbarProps {
   onToggleSidebar?: () => void;
