@@ -53,7 +53,7 @@ Toda a parte de dados e "backend" está hospedada no **Firebase**:
 ## Funcionalidades atuais
 
 - feed de posts em tempo real (Firestore `onSnapshot`)
-- ordenação por recentes, populares e discutidos
+- ordenação por recentes e discutidos
 - cards com resumo, tags, tempo de leitura, dificuldade e autor
 - sistema de likes (um voto por usuário)
 - páginas individuais de post (React Router)
