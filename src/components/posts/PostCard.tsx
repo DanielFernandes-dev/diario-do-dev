@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Heart, Clock, Star, Pencil, Trash2, X, Check } from 'lucide-react';
 import { categories } from '@/data/categories';
 import { useAuth } from '@/context/AuthContext';
@@ -284,8 +285,10 @@ export function PostCard({ post, onLike, onComment, onEditPost, onDeletePost }: 
             </div>
           ) : (
             <>
-              <h2 className="mb-3 text-2xl font-extrabold leading-tight text-white transition-colors hover:text-ink-200">
-                {post.title}
+              <h2 className="mb-3 text-2xl font-extrabold leading-tight text-white">
+                <Link to={`/post/${post.id}`} className="transition-colors hover:text-ink-200">
+                  {post.title}
+                </Link>
               </h2>
 
               <p className="mb-5 max-w-3xl text-sm leading-7 text-zinc-300">

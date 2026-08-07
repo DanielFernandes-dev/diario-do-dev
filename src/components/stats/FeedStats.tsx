@@ -1,5 +1,6 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, LogOut } from 'lucide-react';
 import { categories } from '@/data/categories';
+import { useAuth } from '@/context/AuthContext';
 
 export interface FeedStatsProps {
   profile: {
@@ -14,6 +15,8 @@ export interface FeedStatsProps {
 }
 
 export function FeedStats({ profile, postCount, commentCount, topTags }: FeedStatsProps) {
+  const { currentUser, handleLogout } = useAuth();
+
   return (
     <div className="sticky top-24 space-y-4">
       <div className="sidebar-section text-center">
@@ -33,6 +36,15 @@ export function FeedStats({ profile, postCount, commentCount, topTags }: FeedSta
         <p className="mt-4 text-sm leading-7 text-slate-300">
           {profile.bio}
         </p>
+        {currentUser && (
+          <button
+            onClick={handleLogout}
+            className="mt-4 inline-flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm font-semibold text-zinc-200 transition-colors hover:bg-zinc-800"
+          >
+            <LogOut className="h-4 w-4" />
+            Sair
+          </button>
+        )}
       </div>
 
       <div className="sidebar-section">

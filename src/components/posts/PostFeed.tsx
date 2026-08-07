@@ -1,4 +1,4 @@
-import { BookOpen, Clock, Filter, MessageSquare, TrendingUp } from 'lucide-react';
+import { BookOpen, Clock, Filter, LogIn, MessageSquare, RefreshCw, TrendingUp } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import { categories } from '@/data/categories';
 import type { Post, PostDraft, SortOption } from '@/types/post';
@@ -55,14 +55,44 @@ export function PostFeed({
               <p className="mt-1 text-sm leading-7 text-zinc-400">
                 Apenas o usuário admin pode criar novos posts. Outros usuários podem apenas comentar nos posts existentes.
               </p>
-              {!currentUser && (
-                <button
-                  onClick={onLogin}
-                  className="mt-4 rounded-full bg-ink-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-ink-400"
-                >
-                  Entrar com Google
-                </button>
-              )}
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                {currentUser ? (
+                  <>
+                    <div className="flex items-center gap-2">
+                      {currentUser.photoURL ? (
+                        <img
+                          src={currentUser.photoURL}
+                          alt={currentUser.displayName || ''}
+                          className="h-8 w-8 rounded-xl object-cover ring-1 ring-white/10"
+                        />
+                      ) : (
+                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-ink-400 to-ink-700 text-xs font-black text-white">
+                          {(currentUser.displayName || currentUser.email || 'U').slice(0, 2).toUpperCase()}
+                        </div>
+                      )}
+                      <span className="text-sm font-semibold text-zinc-200">
+                        {currentUser.displayName || currentUser.email}
+                      </span>
+                    </div>
+                    <button
+                      onClick={onLogin}
+                      title="Entrar com outra conta Google"
+                      className="inline-flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm font-semibold text-zinc-200 transition-colors hover:bg-zinc-800"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                      Trocar de conta
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={onLogin}
+                    className="inline-flex items-center gap-2 rounded-full bg-ink-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-ink-400"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Entrar com Google
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </section>

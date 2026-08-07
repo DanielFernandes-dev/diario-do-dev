@@ -88,16 +88,4 @@
   .section-label {
     @apply text-xs font-bold uppercase tracking-[0.3em] text-zinc-400;
   }
-
-  .section-title {
-    @apply text-2xl font-extrabold tracking-tight text-white sm:text-3xl;
-  }
-
-  .text-muted {
-    @apply text-zinc-400;
-  }
-
-  .surface-border {
-    @apply border border-zinc-700;
-  }
 }
