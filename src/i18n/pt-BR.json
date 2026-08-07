@@ -1,0 +1,13 @@
+{
+  "comments": {
+    "login_for": "Faça login para {action}",
+    "reply": "responder",
+    "comment": "comentar",
+    "enter_with_google": "Entrar com Google",
+    "write_reply": "Escreva sua resposta...",
+    "add_comment_placeholder": "Adicione um comentário... (suporta Markdown)",
+    "cancel": "Cancelar",
+    "reply_button": "Responder",
+    "comment_button": "Comentar"
+  }
+}
