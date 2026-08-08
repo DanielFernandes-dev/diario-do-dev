@@ -4,6 +4,7 @@ import type { Comment } from '@/types/comment';
 import { useComments } from './CommentContext';
 import { CommentInput } from './CommentInput';
 import { useAuth } from '@/context/AuthContext';
+import { MarkdownText } from '@/components/common/MarkdownText';
 
 interface CommentItemProps {
   comment: Comment;
@@ -56,22 +57,6 @@ export function CommentItem({ comment, depth = 0 }: CommentItemProps) {
   const formatDate = (date: Date) => {
     const d = new Date(date);
     return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-  };
-
-  const renderContent = (content: string) => {
-    // Simple markdown code block support
-    const parts = content.split(/(```[\s\S]*?```)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('```') && part.endsWith('```')) {
-        const code = part.replace(/```\w*\n?/, '').replace(/```$/, '');
-        return (
-          <pre key={index} className="my-3 overflow-x-auto rounded-2xl border border-zinc-700 bg-black p-4 text-sm font-mono text-zinc-100 shadow-none">
-            <code>{code}</code>
-          </pre>
-        );
-      }
-      return <p key={index} className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">{part}</p>;
-    });
   };
 
   const handleSaveEdit = async () => {
@@ -208,7 +193,15 @@ export function CommentItem({ comment, depth = 0 }: CommentItemProps) {
             </div>
           ) : (
             <div className="mb-3 rounded-2xl border border-zinc-700 bg-zinc-900 p-4">
-              {renderContent(comment.content)}
+              <MarkdownText content={comment.content} />
+              {comment.audioUrl && (
+                <audio
+                  controls
+                  src={comment.audioUrl}
+                  preload="metadata"
+                  className="mt-3 h-9 w-full max-w-md"
+                />
+              )}
             </div>
           )}
 

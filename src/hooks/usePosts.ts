@@ -55,6 +55,12 @@ export function usePosts(
 
   // Set up subscription for posts
   useEffect(() => {
+    // The subscription is tied to sort/category/page size only.
+    // The cursor is intentionally NOT a dependency: it changes on
+    // pagination and must not recreate the subscription (which would
+    // cause an infinite reload loop).
+    const paginationCursor = null; // subscription always starts from the first page
+
     if (!enablePagination) {
       // Non-paginated version (loads all posts) - for backwards compatibility
       const postsQuery = query(
@@ -76,20 +82,18 @@ export function usePosts(
     } else {
       // Paginated version
       loadInitialPage();
-      
-      // Set up real-time subscription for the current page
-      // Note: This is simplified - a production app might need more sophisticated handling
-      // for real-time updates with pagination
+
+      // Set up real-time subscription for the first page
       const currentPageQuery = query(
         collection(db, 'posts'),
-        ...buildQueryConstraints(sortBy, categoryId, cursor, pageSize)
+        ...buildQueryConstraints(sortBy, categoryId, paginationCursor, pageSize)
       );
-      
+
       unsubscribeRef.current = onSnapshot(currentPageQuery, (snapshot) => {
         try {
           // Only update if we're on the first page (cursor is null)
           // For paginated real-time, this gets complex - simplifying for now
-          if (!cursor) {
+          if (!paginationCursor) {
             setPosts(snapshot.docs.map((doc) => mapPost(doc.id, doc.data())));
             setHasMore(snapshot.docs.length === pageSize);
           }
@@ -108,7 +112,7 @@ export function usePosts(
         unsubscribeRef.current();
       }
     };
-  }, [sortBy, categoryId, pageSize, enablePagination, cursor, currentUser]);
+  }, [sortBy, categoryId, pageSize, enablePagination, currentUser]);
 
   const loadInitialPage = useCallback(async () => {
     try {

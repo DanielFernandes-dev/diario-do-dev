@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Clock, Star, Pencil, Trash2, X, Check } from 'lucide-react';
+import { Heart, Clock, Star, Pencil, Trash2, X, Check, BookOpen } from 'lucide-react';
 import { categories } from '@/data/categories';
 import { useAuth } from '@/context/AuthContext';
 import { formatRelativeDate } from '@/utils/formatters';
@@ -285,15 +285,25 @@ export function PostCard({ post, onLike, onComment, onEditPost, onDeletePost }: 
             </div>
           ) : (
             <>
-              <h2 className="mb-3 text-2xl font-extrabold leading-tight text-white">
+              <h2 className="mb-3 break-words text-xl font-extrabold leading-tight text-white sm:text-2xl">
                 <Link to={`/post/${post.id}`} className="transition-colors hover:text-ink-200">
                   {post.title}
                 </Link>
               </h2>
 
-              <p className="mb-5 max-w-3xl text-sm leading-7 text-zinc-300">
-                {post.summary}
+              <p className="mb-2 max-w-3xl break-words text-sm leading-7 text-zinc-300">
+                <Link to={`/post/${post.id}`} className="transition-colors hover:text-ink-200">
+                  {post.summary}
+                </Link>
               </p>
+
+              <Link
+                to={`/post/${post.id}`}
+                className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-ink-400/30 bg-ink-500/10 px-3 py-1.5 text-xs font-semibold text-ink-200 transition-colors hover:border-ink-400/60 hover:bg-ink-500/20 hover:text-ink-100"
+              >
+                <BookOpen className="h-3.5 w-3.5" />
+                Ler post completo
+              </Link>
 
               {post.tags.length > 0 && (
                 <div className="mb-5 flex flex-wrap gap-2">

@@ -77,35 +77,37 @@ export function Home() {
     <div className="min-h-screen">
       <main className="relative pb-16 pt-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)_320px]" id="feed">
+          <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)_320px]" id="feed">
             <Sidebar
-              className="hidden w-72 shrink-0 lg:block"
+              className="order-2 w-full lg:order-1 lg:w-72 lg:shrink-0"
               posts={posts}
               totalComments={totalComments}
               profile={profile}
             />
 
-            <PostFeed
-              posts={sortedPosts}
-              selectedCategory={selectedCategory}
-              onClearCategory={() => setSelectedCategory(null)}
-              sortBy={sortBy}
-              onSortBy={setSortBy}
-              isAdmin={isAdmin}
-              currentUser={currentUser}
-              onLogin={handleGoogleLogin}
-              onCreatePost={handleCreatePost}
-              onLikePost={likePost}
-              onEditPost={updatePost}
-              onDeletePost={deletePost}
-              loadingPosts={loadingPosts}
-              error={error}
-              hasMore={hasMore}
-              onLoadMore={loadMorePosts}
-              onRefresh={refreshPosts}
-            />
+            <div className="order-1 min-w-0 lg:order-2">
+              <PostFeed
+                posts={sortedPosts}
+                selectedCategory={selectedCategory}
+                onClearCategory={() => setSelectedCategory(null)}
+                sortBy={sortBy}
+                onSortBy={setSortBy}
+                isAdmin={isAdmin}
+                currentUser={currentUser}
+                onLogin={handleGoogleLogin}
+                onCreatePost={handleCreatePost}
+                onLikePost={likePost}
+                onEditPost={updatePost}
+                onDeletePost={deletePost}
+                loadingPosts={loadingPosts}
+                error={error}
+                hasMore={hasMore}
+                onLoadMore={loadMorePosts}
+                onRefresh={refreshPosts}
+              />
+            </div>
 
-            <aside className="hidden xl:block">
+            <aside className="order-3 hidden w-full max-lg:block xl:block xl:w-auto">
               <FeedStats
                 profile={profile}
                 postCount={posts.length}

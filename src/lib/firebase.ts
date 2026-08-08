@@ -2,22 +2,28 @@ import { initializeApp } from 'firebase/app';
 import { getAnalytics, isSupported, type Analytics } from 'firebase/analytics';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCYFmlxioPVk6INMPDFRmB6E_snXoVkNtI',
-  authDomain: 'diario-do-dev.firebaseapp.com',
-  projectId: 'diario-do-dev',
-  storageBucket: 'diario-do-dev.firebasestorage.app',
-  messagingSenderId: '471058793756',
-  appId: '1:471058793756:web:d88e62cd7e26948f2b66d9',
-  measurementId: 'G-067LPWVSBH',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 export const googleProvider = new GoogleAuthProvider();
-export const ADMIN_EMAILS = ['danielfernandesdeoliveira459@gmail.com'];
+
+const adminEmailsEnv = import.meta.env.VITE_ADMIN_EMAILS;
+export const ADMIN_EMAILS = adminEmailsEnv
+  ? adminEmailsEnv.split(',').map((email: string) => email.trim())
+  : [];
 
 // Analytics só é inicializado quando o ambiente do navegador suporta isso.
 export const analyticsPromise: Promise<Analytics | null> = isSupported().then((supported) => {

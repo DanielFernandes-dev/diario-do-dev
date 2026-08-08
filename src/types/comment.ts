@@ -18,4 +18,5 @@ export interface Comment {
   isQuestion?: boolean;
   isAnswered?: boolean;
   editedAt?: Date;
+  audioUrl?: string;
 }

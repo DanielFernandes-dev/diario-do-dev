@@ -16,7 +16,7 @@ export function FeedStats({ profile, postCount, commentCount }: FeedStatsProps) 
   const { currentUser, handleLogout } = useAuth();
 
   return (
-    <div className="sticky top-24 space-y-4">
+    <div className="space-y-4 lg:sticky lg:top-24">
       <div className="sidebar-section text-center">
         {profile.avatar ? (
           <img
@@ -29,9 +29,9 @@ export function FeedStats({ profile, postCount, commentCount }: FeedStatsProps) 
             {profile.name.slice(0, 2).toUpperCase()}
           </div>
         )}
-        <h3 className="text-xl font-extrabold text-white">{profile.name}</h3>
-        <p className="mt-1 text-sm text-zinc-400">{profile.email || 'Perfil autenticado com Firebase'}</p>
-        <p className="mt-4 text-sm leading-7 text-slate-300">
+        <h3 className="break-words text-xl font-extrabold text-white">{profile.name}</h3>
+        <p className="mt-1 break-words text-sm text-zinc-400">{profile.email || 'Perfil autenticado com Firebase'}</p>
+        <p className="mt-4 break-words text-sm leading-7 text-slate-300">
           {profile.bio}
         </p>
         {currentUser && (

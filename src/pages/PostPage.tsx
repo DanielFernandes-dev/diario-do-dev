@@ -105,7 +105,7 @@ export function PostPage() {
             </span>
           </div>
 
-          <h1 className="mb-5 text-3xl font-extrabold leading-tight text-white sm:text-4xl">
+          <h1 className="mb-5 break-words text-2xl font-extrabold leading-tight text-white sm:text-4xl">
             {post.title}
           </h1>
 
@@ -121,6 +121,10 @@ export function PostPage() {
               ))}
             </div>
           )}
+
+          <p className="mb-6 break-words border-l-4 border-ink-400/40 bg-zinc-900 py-3 pl-4 pr-3 text-base leading-7 text-zinc-300">
+            {post.summary}
+          </p>
 
           <MarkdownText content={post.content} />
 

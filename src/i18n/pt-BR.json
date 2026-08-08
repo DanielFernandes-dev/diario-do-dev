@@ -8,6 +8,17 @@
     "add_comment_placeholder": "Adicione um comentário... (suporta Markdown)",
     "cancel": "Cancelar",
     "reply_button": "Responder",
-    "comment_button": "Comentar"
+    "comment_button": "Comentar",
+    "audio": {
+      "record": "Gravar áudio",
+      "stop": "Parar",
+      "processing": "Processando...",
+      "discard": "Remover",
+      "hint": "Grave um áudio opcional (até 5 min)",
+      "denied": "Permissão de microfone negada.",
+      "unsupported": "Gravação de áudio não suportada neste navegador.",
+      "empty": "Nenhum áudio foi capturado.",
+      "too_large": "O áudio ficou muito grande. Tente uma gravação mais curta."
+    }
   }
 }

@@ -21,7 +21,7 @@ export function Sidebar({ posts, totalComments, profile, className }: SidebarPro
 
   return (
     <aside className={className || "w-full"}>
-      <div className="sticky top-24 space-y-4">
+      <div className="space-y-4 lg:sticky lg:top-24">
         <div className="sidebar-section">
           <div className="mb-4 flex items-center gap-2">
             <MessageSquare className="h-4 w-4 text-ink-300" />

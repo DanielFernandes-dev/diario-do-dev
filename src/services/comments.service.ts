@@ -44,6 +44,7 @@ export const mapComment = (id: string, data: Record<string, unknown>): Comment =
   isQuestion: Boolean(data.isQuestion ?? false),
   isAnswered: Boolean(data.isAnswered ?? false),
   editedAt: data.editedAt ? toDateValue(data.editedAt) : undefined,
+  audioUrl: data.audioUrl ? String(data.audioUrl) : undefined,
 });
 
 export interface AddCommentInput {
@@ -52,6 +53,7 @@ export interface AddCommentInput {
   authorId: string | null;
   isAuthor: boolean;
   parentId?: string | null;
+  audioUrl?: string | null;
 }
 
 export const subscribeComments = (
@@ -80,6 +82,7 @@ export const addComment = (postId: string, input: AddCommentInput) =>
       parentId: input.parentId ?? null,
       isQuestion: false,
       isAnswered: false,
+      audioUrl: input.audioUrl ?? null,
     }),
     updateDoc(postDoc(postId), {
       commentCount: increment(1),
