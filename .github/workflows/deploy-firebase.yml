@@ -1,0 +1,50 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create .env from vars and secrets
+        run: |
+          cat > .env <<EOF
+          VITE_FIREBASE_API_KEY=${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN=${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID=${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID=${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID=${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID=${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
+          VITE_ADMIN_EMAILS=${{ vars.VITE_ADMIN_EMAILS }}
+          EOF
+
+      - name: Build
+        run: npm run build
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Deploy to Firebase
+        run: |
+          npm i -g firebase-tools
+          firebase deploy --only hosting --project diario-do-dev
