@@ -194,14 +194,6 @@ export function CommentItem({ comment, depth = 0 }: CommentItemProps) {
           ) : (
             <div className="mb-3 rounded-2xl border border-zinc-700 bg-zinc-900 p-4">
               <MarkdownText content={comment.content} />
-              {comment.audioUrl && (
-                <audio
-                  controls
-                  src={comment.audioUrl}
-                  preload="metadata"
-                  className="mt-3 h-9 w-full max-w-md"
-                />
-              )}
             </div>
           )}
 

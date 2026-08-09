@@ -14,7 +14,7 @@ import type { Comment } from '@/types/comment';
 
 export interface CommentsContextValue {
   comments: Comment[];
-  addComment: (content: string, parentId?: string, audioUrl?: string) => Promise<void>;
+  addComment: (content: string, parentId?: string) => Promise<void>;
   likeComment: (commentId: string) => Promise<void>;
   toggleQuestionStatus: (commentId: string, status: 'isQuestion' | 'isAnswered') => Promise<void>;
   deleteComment: (commentId: string) => Promise<void>;
@@ -41,7 +41,7 @@ export function useComments(postId: string): CommentsContextValue {
   }, [flatComments, sortBy]);
 
   const addComment = useCallback(
-    async (content: string, parentId?: string, audioUrl?: string) => {
+    async (content: string, parentId?: string) => {
       const email = currentUser?.email?.toLowerCase();
       const isAdmin = !!email && ADMIN_EMAILS.includes(email);
 
@@ -55,7 +55,6 @@ export function useComments(postId: string): CommentsContextValue {
         authorId: currentUser?.email ?? null,
         isAuthor: isAdmin,
         parentId: parentId ?? null,
-        audioUrl: audioUrl ?? null,
       });
 
       setReplyingTo(null);

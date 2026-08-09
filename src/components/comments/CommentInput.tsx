@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { LogIn } from 'lucide-react';
 import { useComments } from './CommentContext';
 import { useAuth } from '@/context/AuthContext';
-import { AudioRecorder } from './AudioRecorder';
 import { t } from '@/i18n';
 
 interface CommentInputProps {
@@ -12,22 +11,19 @@ interface CommentInputProps {
 
 export function CommentInput({ parentId, isReply = false }: CommentInputProps) {
   const [content, setContent] = useState('');
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const { addComment, setReplyingTo } = useComments();
   const { currentUser, handleGoogleLogin } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if ((!content.trim() && !audioUrl) || !currentUser) return;
-    addComment(content, parentId, audioUrl ?? undefined);
+    if (!content.trim() || !currentUser) return;
+    addComment(content, parentId);
     setContent('');
-    setAudioUrl(null);
   };
 
   const handleCancel = () => {
     setReplyingTo(null);
     setContent('');
-    setAudioUrl(null);
   };
 
   if (!currentUser) {
@@ -72,7 +68,6 @@ export function CommentInput({ parentId, isReply = false }: CommentInputProps) {
         value={content}
         onChange={(e) => setContent(e.target.value)}
       />
-      <AudioRecorder onAudioChange={setAudioUrl} />
       <div className="flex justify-end gap-2 mt-2">
         {isReply && (
           <button
@@ -85,7 +80,7 @@ export function CommentInput({ parentId, isReply = false }: CommentInputProps) {
         )}
         <button
           type="submit"
-          disabled={(!content.trim() && !audioUrl)}
+          disabled={!content.trim()}
           className="rounded-full bg-ink-500 px-4 py-2 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5 hover:bg-ink-400 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
         >
           {isReply ? t('comments.reply_button') : t('comments.comment_button')}
